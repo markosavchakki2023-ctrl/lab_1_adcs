@@ -1,2 +1,1 @@
-# lab_1_adcs
-Laboratoru work № 1 for course Automated design of computer systems
+Савчак Марко Михайлович, КІ-407, варіант 20. Створення спеціалізованого AI-агента з навичками (skills), командами (commands) та оркестрацією для генерації, складання, тестування і перевірки кросплатформного проєкту Hello World.
