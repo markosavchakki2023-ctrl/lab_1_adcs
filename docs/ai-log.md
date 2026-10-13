@@ -1,7 +1,7 @@
 # Журнал взаємодії з AI
 
 ## 1. Manifest агента
-**Запит:** Створи файл .github/agents/build-engineer.agent.md: manifest спеціалізованого
+**Запит:** ```Створи файл .github/agents/build-engineer.agent.md: manifest спеціалізованого
 AI-агента "build-engineer" для GitHub Copilot у VS Code.
 
 Контекст проєкту:
@@ -36,7 +36,31 @@ AI-агента "build-engineer" для GitHub Copilot у VS Code.
    - у Git немає build-каталогів і секретів;
    - check завершується без помилок.
 
-Пиши українською, стисло й однозначно, без загальних фраз на кшталт "зроби проєкт".
+Пиши українською, стисло й однозначно, без загальних фраз на кшталт "зроби проєкт".```
 **Результат:** створено .github/agents/build-engineer.agent.md
-**Помилки / зауваження:** не виявлено"
+**Помилки / зауваження:** не виявлено
 **Рішення:** прийняв 
+
+## 2. Перший skill: project-scaffold
+**Запит:** ```Створи файл .github/skills/project-scaffold/SKILL.md для агента build-engineer.
+
+Skill описує створення мінімального Hello World-проєкту на Python (venv + pytest).
+
+Файл має починатися з YAML frontmatter (name: project-scaffold, description:
+коли застосовувати skill), далі розділи markdown:
+
+Призначення і коли застосовувати.
+Вхідні дані: мова (python) і назва проєкту.
+Що створює: src/hello.py (виводить Hello, World!), README.md,
+структуру каталогів src/ і tests/, початковий .gitignore
+(.venv/, venv/, __pycache__/, .pytest_cache/, build/, dist/).
+Правила: якщо файл уже існує, не перезаписувати і не дублювати рядки
+в .gitignore; нічого не видаляти.
+Перевірки результату: існує src/hello.py, його можна запустити
+командою python src/hello.py, і він виводить Hello, World!.
+Приклад входу та очікуваного результату.
+Типовий сценарій помилки (наприклад, Python не знайдено) і що робити.
+Пиши українською, стисло й однозначно.```
+**Результат:** створено .github/skills/project-scaffold/SKILL.md
+**Помилки/зауваження:** не виявлено
+**Рішення:** прийняв
