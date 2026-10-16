@@ -498,3 +498,33 @@ init-project: назва init займається вбудованою кома
 
 ## 15. Запуску після зміни назви
 Після виконання команди init-project усе створилося успішно. Запущений hello.bat файл працює добре. Виконання команди check також завершилося успішно 
+
+## 16. Виравлення проблем з CI 
+**Зпит:** ```Під час першого запуску CI у GitHub Actions виявлено помилки:
+1) Linux/macOS: "./ci.sh: Permission denied" (код 126), бо ci.sh у Git
+   має режим 100644.
+2) Windows: у PowerShell "ci.bat is not recognized", бо PowerShell не
+   запускає скрипти з поточного каталогу без ".\".
+3) Через fail-fast падіння одного job скасувало інші.
+
+Онови skills і commands так, щоб це не повторювалось:
+
+- .github/skills/github-actions/SKILL.md: у ci.yml використовувати
+  strategy fail-fast: false; окремі кроки запуску: для Linux/macOS
+  "if: runner.os != 'Windows'" з run: ./ci.sh, для Windows
+  "if: runner.os == 'Windows'" з shell: cmd і run: ci.bat. Workflow
+  по-старому лише викликає скрипти.
+- .github/skills/build-and-test/SKILL.md: після створення ci.sh виставити
+  право на виконання в індексі Git командою
+  git update-index --add --chmod=+x ci.sh (без коміту); створити
+  .gitattributes із рядками "*.sh text eol=lf" і "*.bat text eol=crlf",
+  не дублюючи наявні рядки.
+- .github/prompts/check.prompt.md: додати перевірки, що
+  git ls-files --stage ci.sh показує 100755, існує .gitattributes,
+  у ci.yml є fail-fast: false і shell: cmd для Windows.
+- В обох skills додати ці випадки в розділ типових помилок.
+
+Змінюй мінімально, нічого не видаляй. Покажи список змінених файлів.```
+**Помилки / зауваження:** не виявлено
+**Результат:** внеснео зміни до зазаеначених файлів. 
+**Рішення:** прийняв 
