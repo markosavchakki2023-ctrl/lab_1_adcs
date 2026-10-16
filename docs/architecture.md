@@ -26,12 +26,12 @@
 | Command | `.github/prompts/create-build.prompt.md` | Викликає skill `build-and-test`, запускає CI-скрипт і перевіряє тести та build |
 | Command | `.github/prompts/create-actions.prompt.md` | Викликає skill `github-actions` і створює CI workflow |
 | Command | `.github/prompts/check.prompt.md` | Read-only перевіряє структуру, skills, commands, складання, тести, workflow, Git і журнал |
-| Command | `.github/prompts/init.prompt.md` | Оркестратор: координує решту п’яти commands у визначеному порядку та формує підсумковий звіт |
+| Command | `.github/prompts/init-project.prompt.md` | Оркестратор `init-project`: координує решту п’яти commands у визначеному порядку та формує підсумковий звіт |
 
 ## 3. Схема взаємодії
 
 ```text
-init
+init-project
  |
  +--> git-init
  |
@@ -44,11 +44,13 @@ init
  +--> check
 ```
 
-`init` запускає commands послідовно:
+`init-project` запускає commands послідовно:
 
 ```text
 git-init -> create-project -> create-build -> create-actions -> check
 ```
+
+Команда має назву `init-project`, тому що назва `init` зайнята вбудованою командою Copilot.
 
 Команди `create-project`, `create-build` і `create-actions` передають виконання відповідним skills. `git-init` і `check` виконують власні перевірки та дії, описані у своїх prompt-файлах.
 
@@ -69,20 +71,20 @@ git-init -> create-project -> create-build -> create-actions -> check
 | `create-build` | `src/hello.py`, `build-and-test`, встановлений Python | Читає та виконує skill, запускає `./ci.sh` на Linux/macOS або `ci.bat` на Windows, показує результат | `requirements.txt`, `pytest.ini`, модуль із `add(a, b)`, `tests/test_basic.py`, `ci.sh`, `ci.bat`, `build/hello` |
 | `create-actions` | `ci.sh`, `ci.bat`, `github-actions` | Читає та виконує skill, не дублює наявний workflow, показує створене або пропущене | `.github/workflows/ci.yml` |
 | `check` | Git-репозиторій, встановлений Python | Read-only перевіряє шість груп: агент/skills/commands, проєкт, складання/тести, workflow, Git, журнал | Нові файли не створює; допускає лише побічні `.venv/` і `build/` від CI-скриптів |
-| `init` | Git-репозиторій, Python, Git, усі п’ять commands і три skills | Послідовно запускає `git-init`, `create-project`, `create-build`, `create-actions`, `check`; після кожного кроку перевіряє результат | Файли, які створюють підпорядковані commands; формує підсумковий звіт |
+| `init-project` | Git-репозиторій, Python, Git, усі п’ять commands і три skills | Послідовно запускає `git-init`, `create-project`, `create-build`, `create-actions`, `check`; після кожного кроку перевіряє результат | Файли, які створюють підпорядковані commands; формує підсумковий звіт |
 
 ## 6. Дані між етапами
 
-- Мова `python` і назва проєкту визначаються один раз на початку `init`.
+- Мова `python` і назва проєкту визначаються один раз на початку `init-project`.
 - `create-project` передає наступним етапам результат наявності `src/hello.py`, каталогів `src/` і `tests/`.
 - `create-build` створює та передає далі `ci.sh` і `ci.bat`, а також результат `pytest` і build.
 - `create-actions` використовує `ci.sh` і `ci.bat` для workflow.
-- Після кожного кроку `init` збирає створені файли, пропущені наявні файли, код завершення та помилки.
+- Після кожного кроку `init-project` збирає створені файли, пропущені наявні файли, код завершення та помилки.
 - `check` отримує весь створений стан і перевіряє його цілісність без виправлення файлів.
 
 ## 7. Обробка помилок оркестратором
 
-`init` перевіряє всі передумови до першого кроку. Після кожного кроку він перевіряє результат. При першій помилці оркестратор:
+`init-project` перевіряє всі передумови до першого кроку. Після кожного кроку він перевіряє результат. При першій помилці оркестратор:
 
 1. негайно зупиняється;
 2. не запускає наступні commands;
@@ -97,7 +99,7 @@ git-init -> create-project -> create-build -> create-actions -> check
 |---|---|---|
 | Agent manifest | `.github/agents/build-engineer.agent.md` | Manifest custom agent для GitHub Copilot у VS Code |
 | Skills | `.github/skills/<name>/SKILL.md` | On-demand процедури `project-scaffold`, `build-and-test`, `github-actions` |
-| Commands/prompts | `.github/prompts/*.prompt.md` | Окремі команди та orchestrator `init` |
+| Commands/prompts | `.github/prompts/*.prompt.md` | Окремі команди та orchestrator `init-project` |
 | `CMakeLists.txt` | `requirements.txt`, `pytest.ini`, `ci.sh`, `ci.bat` | Для Python CMake-конфігурація методички замінена залежностями, налаштуванням pytest і кросплатформними скриптами |
 | Build/test workflow | `.github/workflows/ci.yml` | GitHub Actions CI з matrix для Ubuntu, Windows і macOS |
 

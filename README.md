@@ -9,7 +9,7 @@ AI-агент `build-engineer` для GitHub Copilot у VS Code створює P
 1. Відкрийте репозиторій у VS Code.
 2. Відкрийте Copilot Chat.
 3. Виберіть агента `build-engineer`.
-4. Запустіть повний сценарій командою `/init`.
+4. Запустіть повний сценарій командою `/init-project`.
 
 Окремі команди: `/git-init`, `/create-project`, `/create-build`, `/create-actions`, `/check`.
 
@@ -20,7 +20,7 @@ AI-агент `build-engineer` для GitHub Copilot у VS Code створює P
 ## Структура репозиторію
 
 - `.github/agents/` — manifest агента `build-engineer`;
-- `.github/prompts/` — команди `git-init`, `create-project`, `create-build`, `create-actions`, `check` та orchestrator `init`;
+- `.github/prompts/` — команди `git-init`, `create-project`, `create-build`, `create-actions`, `check` та orchestrator `init-project`;
 - `.github/skills/` — skills `project-scaffold`, `build-and-test`, `github-actions`;
 - `src/`, `tests/`, `requirements.txt`, `pytest.ini`, `ci.sh`, `ci.bat` — файли Python-проєкту, складання і тестування;
 - `.github/workflows/ci.yml` — GitHub Actions workflow.

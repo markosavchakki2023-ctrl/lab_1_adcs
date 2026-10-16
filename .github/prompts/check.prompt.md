@@ -28,8 +28,8 @@ agent: "build-engineer"
 - агент містить роль, обмеження із забороненими діями та критерії завершення;
 - існують skills `project-scaffold`, `build-and-test`, `github-actions`;
 - кожен skill містить призначення, вхідні дані, створювані результати та перевірки;
-- існують commands `git-init`, `create-project`, `create-build`, `create-actions`, `check`, `init`;
-- `init` викликає commands саме в порядку `git-init`, `create-project`, `create-build`, `create-actions`, `check`.
+- існують commands `git-init`, `create-project`, `create-build`, `create-actions`, `check`, `init-project`;
+- `init-project` викликає commands саме в порядку `git-init`, `create-project`, `create-build`, `create-actions`, `check`.
 
 FAIL цієї групи: `Перевірка агента, skills або commands не пройдена. Запустіть відсутню команду або відновіть відповідний файл конфігурації.`
 
@@ -123,7 +123,7 @@ FAIL цієї групи: `Журнал docs/ai-log.md відсутній. Пе�
 
 Для кожної групи використовуй окреме повідомлення з назвою групи, фактичною причиною та підказкою, яку команду запустити:
 
-- агент, skills і commands — `init` або відповідну команду створення конфігурації;
+- агент, skills і commands — `init-project` або відповідну команду створення конфігурації;
 - проєкт — `create-project`;
 - складання і тести — `create-build`;
 - workflow — `create-actions`;
