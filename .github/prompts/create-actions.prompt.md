@@ -43,6 +43,8 @@ python -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml', encoding
 
 - у matrix є `ubuntu-latest`, `windows-latest` і `macos-latest`;
 - workflow викликає `./ci.sh` для Linux/macOS і `ci.bat` для Windows;
+- у `strategy` встановлено `fail-fast: false`;
+- Windows-крок має `if: runner.os == 'Windows'`, `shell: cmd` і `run: ci.bat`;
 - workflow не містить власної логіки складання чи тестів, а лише викликає ці скрипти та завантажує результат;
 - тригери `push` і `pull_request` налаштовані для `develop` та `master`;
 - у файлі немає `secrets`, токенів, паролів або інших секретів.

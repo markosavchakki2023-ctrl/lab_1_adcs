@@ -33,6 +33,7 @@ agent: "build-engineer"
 - `tests/test_basic.py` із тестом `BasicAddition`
 - `ci.sh`
 - `ci.bat`
+- `.gitattributes` із правилами `*.sh text eol=lf` і `*.bat text eol=crlf`
 - виконуваний запускний файл `build/hello`
 
 На Windows також очікується `build/hello.bat`. Каталог `build/` є згенерованим артефактом і не має відстежуватися Git.
@@ -77,7 +78,7 @@ build\hello.bat
 Hello, World!
 ```
 
-Перевір через `git status`, що каталог `build/` не показується як невідстежуваний. Якщо `./ci.sh` не запускається на POSIX, перевір право виконання файлу та результат команди `chmod +x ci.sh`.
+Перевір через `git status`, що каталог `build/` не показується як невідстежуваний. Перевір режим `ci.sh` командою `git ls-files --stage ci.sh`; очікується `100755`. Якщо режим інший, виконай `git update-index --add --chmod=+x ci.sh` без коміту. Перевір наявність правил `.gitattributes`.
 
 ## 6. Повідомлення про помилку
 

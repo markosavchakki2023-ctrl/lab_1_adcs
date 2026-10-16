@@ -30,6 +30,8 @@ agent: "build-engineer"
 - кожен skill містить призначення, вхідні дані, створювані результати та перевірки;
 - існують commands `git-init`, `create-project`, `create-build`, `create-actions`, `check`, `init-project`;
 - `init-project` викликає commands саме в порядку `git-init`, `create-project`, `create-build`, `create-actions`, `check`.
+- `git ls-files --stage ci.sh` показує режим `100755`;
+- існує `.gitattributes` із рядками `*.sh text eol=lf` і `*.bat text eol=crlf`.
 
 FAIL цієї групи: `Перевірка агента, skills або commands не пройдена. Запустіть відсутню команду або відновіть відповідний файл конфігурації.`
 
@@ -67,6 +69,8 @@ FAIL цієї групи: `Складання або тести не пройш�
 - містить у matrix `ubuntu-latest`, `windows-latest`, `macos-latest`;
 - лише викликає `ci.sh` і `ci.bat` та не містить власної логіки складання чи тестів;
 - має тригери `push` і `pull_request` для гілок `develop` та `master`.
+- має `fail-fast: false` у `strategy`;
+- Windows-крок має `if: runner.os == 'Windows'`, `shell: cmd` і `run: ci.bat`.
 
 FAIL цієї групи: `Workflow не відповідає вимогам. Запустіть create-actions і повторіть check.`
 
