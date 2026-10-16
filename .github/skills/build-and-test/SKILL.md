@@ -30,7 +30,7 @@ Skill додає до мінімального Python-проєкту локал�
 - `ci.bat` для Windows.
 - `.gitattributes` з правилами `*.sh text eol=lf` і `*.bat text eol=crlf`.
 
-Скрипти `ci.sh` і `ci.bat` повинні:
+Скрипт `ci.sh` на Linux/macOS має використовувати доступний POSIX-інтерпретатор `python3`, а `ci.bat` на Windows — команду `python`. Обидва скрипти повинні:
 
 1. створювати `.venv`, якщо його немає;
 2. встановлювати залежності з `requirements.txt` через Python цього середовища;
