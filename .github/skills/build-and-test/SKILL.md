@@ -28,6 +28,7 @@ Skill додає до мінімального Python-проєкту локал�
 - `tests/test_basic.py` з класом `TestBasicAddition` і тестом виклику `add(2, 3)`, що очікує `5`;
 - `ci.sh` для Linux/macOS;
 - `ci.bat` для Windows.
+- `.gitattributes` з правилами `*.sh text eol=lf` і `*.bat text eol=crlf`.
 
 Скрипти `ci.sh` і `ci.bat` повинні:
 
@@ -36,6 +37,19 @@ Skill додає до мінімального Python-проєкту локал�
 3. запускати `pytest`;
 4. створювати каталог `build/`;
 5. генерувати запускні файли `build/hello` і `build/hello.bat`, які запускають `src/hello.py`.
+
+Після створення `ci.sh` вистав режим виконання в індексі Git без коміту:
+
+```text
+git update-index --add --chmod=+x ci.sh
+```
+
+Додай до `.gitattributes` лише відсутні рядки:
+
+```text
+*.sh text eol=lf
+*.bat text eol=crlf
+```
 
 Скрипти мають зупинятися на першій помилці та повертати ненульовий код завершення. Не додавай `.venv/` або `build/` до Git: вони мають бути виключені в `.gitignore`.
 
@@ -96,3 +110,6 @@ build/hello: Hello, World!
 - Якщо не вдалося створити `.venv`, перевір доступність Python і права запису в каталог. Не продовжуй зі системним Python, якщо скрипт очікує ізольоване середовище.
 - Якщо встановлення `pytest` не вдалося, повідом мережеву або версійну помилку та поверни ненульовий код.
 - Якщо тест `TestBasicAddition` не проходить, зупини CI, покажи traceback і виправляй причину в коді або тесті лише після перевірки наявних файлів; не маскуй провал тесту.
+- Якщо Linux/macOS повідомляє `./ci.sh: Permission denied` або код `126`, перевір режим `git ls-files --stage ci.sh` і виконай `git update-index --add --chmod=+x ci.sh` без коміту.
+- Якщо Windows не знаходить `ci.bat` у PowerShell, запускай його у workflow з `shell: cmd` і `run: ci.bat`, а не через PowerShell.
+- Якщо змішані кінці рядків ламають скрипти, перевір `.gitattributes` і правила `*.sh text eol=lf` та `*.bat text eol=crlf`.

@@ -46,6 +46,7 @@ jobs:
   build-and-test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
@@ -55,6 +56,7 @@ jobs:
         run: ./ci.sh
       - name: Build and test on Windows
         if: runner.os == 'Windows'
+        shell: cmd
         run: ci.bat
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -111,5 +113,7 @@ Workflow запускається для `push` і `pull_request` у `develop` �
 
 - Якщо Linux/macOS runner не може виконати `ci.sh`, перевір право виконання та виправ його через `chmod +x ci.sh`. Не замінюй виклик скрипта прихованою логікою в workflow.
 - Якщо `ci.bat` відсутній, зупинись і спочатку застосуй `build-and-test`; не прибирай Windows із matrix.
+- Якщо Windows runner не знаходить `ci.bat`, перевір, що крок має `shell: cmd`; PowerShell не запускає скрипти з поточного каталогу без префікса `.\`.
+- Якщо падіння одного job скасовує інші, перевір, що в `strategy` встановлено `fail-fast: false`.
 - Якщо YAML невалідний, виправ відступи, умови та вирази matrix, після чого повтори перевірку.
 - Якщо artifact не завантажується, перевір, що `ci.sh` або `ci.bat` завершилися успішно та створили `build/`; не маскуй помилку `upload-artifact`.
