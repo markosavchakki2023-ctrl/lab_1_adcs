@@ -500,7 +500,7 @@ init-project: назва init займається вбудованою кома
 Після виконання команди init-project усе створилося успішно. Запущений hello.bat файл працює добре. Виконання команди check також завершилося успішно 
 
 ## 16. Виравлення проблем з CI 
-**Зпит:** ```Під час першого запуску CI у GitHub Actions виявлено помилки:
+**Запит:** ```Під час першого запуску CI у GitHub Actions виявлено помилки:
 1) Linux/macOS: "./ci.sh: Permission denied" (код 126), бо ci.sh у Git
    має режим 100644.
 2) Windows: у PowerShell "ci.bat is not recognized", бо PowerShell не
@@ -526,4 +526,22 @@ init-project: назва init займається вбудованою кома
 
 Змінюй мінімально, нічого не видаляй. Покажи список змінених файлів.```
 
-У результаті github actions для windows стали працювати а для Linux та macos ще не працюють. Після запиту тепер jobs для windows справні а для linux та macos ні copilot вніс зміни до файлів .github/build-and-test/SKILL.md та ci.sh
+У результаті copilot вивід список змінених файлів і наступне: Важливе обмеження поточного стану репозиторію:
+ci.sh і ci.bat зараз відсутні у робочому дереві;
+.github/workflows/ci.yml також відсутній;
+тому команда git update-index --add --chmod=+x ci.sh завершилася помилкою:
+Через відсутність ci.sh я не міг фактично встановити й перевірити режим 100755. 
+
+Ці файли були створені старими skills, які є на гілці develop і для оновлення цих файлів
+ввів запит: ```Застосуй оновлені skills до поточного проєкту: виправ існуючий
+.github/workflows/ci.yml за оновленим skill github-actions, створи
+.gitattributes і виставити право на виконання для ci.sh в індексі Git
+за оновленим skill build-and-test. Потім виконай перевірки з команди
+check і покажи звіт. Не змінюй інші файли, нічого не видаляй, коміти
+не роби.```
+
+## 17. Подальше виправлення CI для Linux і macOS
+**Запит:** простий запит до Copilot із проханням виправити помилки CI для Linux і macOS тепер - jobs для windows справні а для linux та macos ні
+**Результат:** Copilot вніс зміни до .github/skills/build-and-test/SKILL.md та ci.sh. Після цього jobs для Windows працювали, а для Linux і macOS ще ні. Наступний git push було відхилено (fetch first), бо Copilot coding agent (copilot-swe-agent[bot]) додав у гілку feature два коміти: «fix: make ci.sh executable for GitHub Actions» (права на виконання ci.sh) і «chore: set explicit workflow token permissions» (блок permissions: contents: read у ci.yml).
+**Помилки / зауваження:** попередніх виправлень не вистачило для Linux і macOS; push відхилено через віддалені коміти. Примусовий push (--force) не використовував.
+**Рішення:** переглянув віддалені зміни через git diff: блок permissions лише обмежує права токена до читання і не містить секретів, тому прийняв його; злив коміти командою git pull --no-rebase і виконав push. Після цього всі три jobs (Ubuntu, Windows, macOS) успішні.
