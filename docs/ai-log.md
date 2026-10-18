@@ -472,8 +472,76 @@ agent: build-engineer; використай той самий формат, що
 **Помилки / зауваження:** не виявлено
 **Рішення:** прийняв
 
-## 14. Спроба запуску агента за допоомгою команди init
+## 14. Спроба запуску агента за допомгою команди init
 **Запит:** ввів Copilot команду /init
 **Резултат:** Copilot виконав вбудовану команду /init, яка генерує файл інструкцій для репозиторію і створив .github/copilot-instructions.md. Назва збіглася з моєю init.prompt.md, тому вбудована команда «перехопила» запуск.
 **Помилки / зауваження:** помилка зі сторони Copilot яку команду виконувати
 **Рішення:** видалив зайвий файл і спробував через палітру команд виконати потрібну команду за допмогою Chat: Run Prompt, але безуспішно, тому прийняв рішення змінити назву власної команди.
+**Запит для переіменування init на init-project та внесення змін до необхідних файлів:** ```Команду-оркестратор в цьому репозиторії перейменовано з "init" на
+"init-project" (файл .github/prompts/init-project.prompt.md), бо назва init
+збігається з вбудованою командою Copilot і запускає її замість нашої.
+
+Онови всі згадки назви нашої команди з init на init-project у файлах:
+.github/agents/build-engineer.agent.md, .github/prompts/ (зокрема в самому
+init-project.prompt.md та check.prompt.md), .github/skills/,
+README.md, docs/architecture.md, docs/usage.md.
+
+Заміни тільки згадки нашої команди-оркестратора (наприклад, /init у
+інструкціях запуску). Не чіпай слова "init" в інших значеннях
+(наприклад, git init, "ініціалізація").
+
+У docs/architecture.md додай коротке пояснення, чому команда має назву
+init-project: назва init займається вбудованою командою Copilot.
+
+Нічого не видаляй. Після змін покажи список змінених файлів.```
+У результат була змінена назва команди і внесені зміни до файлів.
+
+## 15. Запуску після зміни назви
+Після виконання команди init-project усе створилося успішно. Запущений hello.bat файл працює добре. Виконання команди check також завершилося успішно 
+
+## 16. Виравлення проблем з CI 
+**Запит:** ```Під час першого запуску CI у GitHub Actions виявлено помилки:
+1) Linux/macOS: "./ci.sh: Permission denied" (код 126), бо ci.sh у Git
+   має режим 100644.
+2) Windows: у PowerShell "ci.bat is not recognized", бо PowerShell не
+   запускає скрипти з поточного каталогу без ".\".
+3) Через fail-fast падіння одного job скасувало інші.
+
+Онови skills і commands так, щоб це не повторювалось:
+
+- .github/skills/github-actions/SKILL.md: у ci.yml використовувати
+  strategy fail-fast: false; окремі кроки запуску: для Linux/macOS
+  "if: runner.os != 'Windows'" з run: ./ci.sh, для Windows
+  "if: runner.os == 'Windows'" з shell: cmd і run: ci.bat. Workflow
+  по-старому лише викликає скрипти.
+- .github/skills/build-and-test/SKILL.md: після створення ci.sh виставити
+  право на виконання в індексі Git командою
+  git update-index --add --chmod=+x ci.sh (без коміту); створити
+  .gitattributes із рядками "*.sh text eol=lf" і "*.bat text eol=crlf",
+  не дублюючи наявні рядки.
+- .github/prompts/check.prompt.md: додати перевірки, що
+  git ls-files --stage ci.sh показує 100755, існує .gitattributes,
+  у ci.yml є fail-fast: false і shell: cmd для Windows.
+- В обох skills додати ці випадки в розділ типових помилок.
+
+Змінюй мінімально, нічого не видаляй. Покажи список змінених файлів.```
+
+У результаті copilot вивід список змінених файлів і наступне: Важливе обмеження поточного стану репозиторію:
+ci.sh і ci.bat зараз відсутні у робочому дереві;
+.github/workflows/ci.yml також відсутній;
+тому команда git update-index --add --chmod=+x ci.sh завершилася помилкою:
+Через відсутність ci.sh я не міг фактично встановити й перевірити режим 100755. 
+
+Ці файли були створені старими skills, які є на гілці develop і для оновлення цих файлів
+ввів запит: ```Застосуй оновлені skills до поточного проєкту: виправ існуючий
+.github/workflows/ci.yml за оновленим skill github-actions, створи
+.gitattributes і виставити право на виконання для ci.sh в індексі Git
+за оновленим skill build-and-test. Потім виконай перевірки з команди
+check і покажи звіт. Не змінюй інші файли, нічого не видаляй, коміти
+не роби.```
+
+## 17. Подальше виправлення CI для Linux і macOS
+**Запит:** простий запит до Copilot із проханням виправити помилки CI для Linux і macOS тепер - jobs для windows справні а для linux та macos ні
+**Результат:** Copilot вніс зміни до .github/skills/build-and-test/SKILL.md та ci.sh. Після цього jobs для Windows працювали, а для Linux і macOS ще ні. Наступний git push було відхилено (fetch first), бо Copilot coding agent (copilot-swe-agent[bot]) додав у гілку feature два коміти: «fix: make ci.sh executable for GitHub Actions» (права на виконання ci.sh) і «chore: set explicit workflow token permissions» (блок permissions: contents: read у ci.yml).
+**Помилки / зауваження:** попередніх виправлень не вистачило для Linux і macOS; push відхилено через віддалені коміти. Примусовий push (--force) не використовував.
+**Рішення:** переглянув віддалені зміни через git diff: блок permissions лише обмежує права токена до читання і не містить секретів, тому прийняв його; злив коміти командою git pull --no-rebase і виконав push. Після цього всі три jobs (Ubuntu, Windows, macOS) успішні.
